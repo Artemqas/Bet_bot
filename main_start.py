@@ -2,7 +2,6 @@ import telebot
 import config
 
 from telebot import types
-from telebot.types import InputMediaPhoto
 
 from payment import create_comment, generate_link_for_get_payment, get_operations, checking_is_payment_done, get_comment
 from const import *
@@ -57,57 +56,6 @@ def FirstMessage(message):
         parse_mode='html', reply_markup = markup)
         bot.send_document(message.chat.id, oferta)
 
-
-def what_bets(message):
-    if message.text == 'Изменить ставку' and message.chat.id == 1878499259:
-        msg = bot.send_message(1878499259, 'Выбери киберспорт и что хочешь изменить', parse_mode = 'html', reply_markup = markup_choice_sport)
-        bot.register_next_step_handler(msg, do_changes)
-    if message.text == 'Продолжить как User' and message.chat.id == 1878499259:
-        msg = bot.send_message(1878499259, 'Выбираем спорт, как User', parse_mode = 'html', reply_markup = markup)
-        choice_sport(message)
-
-def do_changes(message):
-    if message.text == 'Футбол':
-        s_name = message.text
-        msg = bot.send_message(1878499259, "Сейчас ставка:\n\n{0}\n\nНапиши на что изменить".format(get_last_bet(s_name)), parse_mode = 'html', reply_markup = None)
-        bot.register_next_step_handler(msg, lambda c: change_football(c, s_name))
-        #football(message.text)
-    if message.text == 'Баскетбол':
-        s_name = message.text
-        msg = bot.send_message(1878499259, "Сейчас ставка:\n\n{0}\n\nНапиши на что изменить".format(get_last_bet(s_name)), parse_mode = 'html', reply_markup = None)
-        bot.register_next_step_handler(msg, lambda c: change_basketball(c, s_name))
-    if message.text == 'Теннис':
-        s_name = message.text
-        msg = bot.send_message(1878499259, "Сейчас ставка:\n\n{0}\n\nНапиши на что изменить".format(get_last_bet(s_name)), parse_mode = 'html', reply_markup = None)
-        bot.register_next_step_handler(msg, lambda c: change_tennis(c, s_name))
-    if message.text == 'Киберспорт':
-        s_name = message.text
-        msg = bot.send_message(1878499259, "Сейчас ставка:\n\n{0}\n\nНапиши на что изменить".format(str(get_last_bet(s_name))), parse_mode = 'html', reply_markup = None)
-        bot.register_next_step_handler(msg, lambda c: change_cyber(c, s_name))
-
-def change_football(message, s_name):
-    txt_bet = message.text
-    insert_into_bets(s_name, txt_bet)
-    bot.send_message(1878499259, "Ставка изменена!", parse_mode = 'html', reply_markup = admin_markup)
-    FirstMessage(message)
-
-def change_basketball(message, s_name):
-    txt_bet = message.text
-    insert_into_bets(s_name, txt_bet)
-    bot.send_message(1878499259, "Ставка изменена!", parse_mode = 'html', reply_markup = admin_markup)
-    FirstMessage(message)
-
-def change_tennis(message, s_name):
-    txt_bet = message.text
-    insert_into_bets(s_name, txt_bet)
-    bot.send_message(1878499259, "Ставка изменена!", parse_mode = 'html', reply_markup = admin_markup)
-    FirstMessage(message)
-
-def change_cyber(message, s_name):
-    txt_bet = message.text
-    insert_into_bets(s_name, txt_bet)
-    bot.send_message(1878499259, "Ставка изменена!", parse_mode = 'html', reply_markup = admin_markup)
-    FirstMessage(message)
 
 @bot.message_handler(content_types = ['text'])
 def choice_sport(message):
