@@ -18,7 +18,7 @@ import sqlite3
 # 'https://1xstavka.ru/line/Esports/'
 # 'https://1xstavka.ru/line/Tennis/'
 
-def find_matches(url):
+def find_matches(url, sport_name):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'lxml')
     matches = soup.find_all('div', class_='c-events__item c-events__item_game')
@@ -40,7 +40,6 @@ def find_matches(url):
                 (str_match.find_all('span', class_='c-bets__inner'))[2].text)
 
     for match in matches:
-        print(match)
         title = get_title(match)
         match_date = get_date(match, url)
         winners = get_winners(match)
@@ -50,24 +49,25 @@ def find_matches(url):
         if title is None:
             continue
         bet_date, bet_time = inc_date.split(' ')[0] + '.2021', inc_date.split(' ')[1]
-
         bet_date_obj = datetime.strptime(bet_date, '%d.%m.%Y').date()
-        if bet_date_obj == date.today():
-            max_coef = str(winnerq[0] + 'Победа первого') if float(winnerq[0]) >= 1.75 else str(winnerq[1] + 'Победа второго')
-           ''' conn = sqlite3.connect('bot_DB.db')
-            cur = conn.cursor()
-            cur.execute("INSERT INTO bets(title, date, winner) VALUES (?, ?, ?)", (title, inc_date, ))
-            conn.commit()
-            conn.close()'''
+        if date.today() <= bet_date_obj <= (date.today() + timedelta(days=1)):
+            max_coef = str(winnerq[0] + ' Победа первого') if (float(winnerq[0]) >= 1.75) else str(winnerq[1] + ' Победа второго')
+            if sport_name == 'Football':
+                conn = sqlite3.connect('bot_DB.db')
+                cur = conn.cursor()
+                cur.execute("INSERT INTO football(title, date, winner) VALUES (?, ?, ?)", (title, inc_date, max_coef))
+                conn.commit()
+                conn.close()
+            elif sport_name == 'Esports':
+                conn = sqlite3.connect('bot_DB.db')
+                cur = conn.cursor()
+                cur.execute("INSERT INTO esports(title, date, winner) VALUES (?, ?, ?)", (title, inc_date, max_coef))
+                conn.commit()
+                conn.close()
 
 
-# bet_football = Bets('https://1xstavka.ru/line/Football/').find_matches()
-# bet_basketball = Bets('https://1xstavka.ru/line/Basketball/').find_matches()
-# bet_cyber = Bets('https://1xstavka.ru/line/Esports/').find_matches()
-
-
-schedule.every(1).seconds.do(find_matches, 'https://1xstavka.ru/line/Football/')
-#schedule.every(1).seconds.do(find_matches, 'https://1xstavka.ru/line/Basketball/')
+schedule.every(1).seconds.do(find_matches, 'https://1xstavka.ru/line/Football/', 'Football')
+schedule.every(1).seconds.do(find_matches, 'https://1xstavka.ru/line/Esports/', 'Esports')
 # schedule.every(10).seconds.do(find_matches, 'https://1xstavka.ru/line/Esports/')
 # schedule.every(10).seconds.do(find_matches, 'https://1xstavka.ru/line/Tennis/')
 

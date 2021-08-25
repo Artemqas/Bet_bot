@@ -146,4 +146,7 @@ def process_payment(message, text):
             bot.send_message(message.chat.id, "Произошла ошибка, если Вы считаете, что оплата прошла, то напишите администратору, иначе повторите попытку.", parse_mode = 'html', reply_markup = markup)
             choice_sport(message)
 
+def choose_correct_coef():
+    pass
+
 bot.polling(none_stop=True)
